@@ -9,16 +9,23 @@ from sklearn.preprocessing import MinMaxScaler
 import seaborn as sb
 
 data=pd.read_csv("./dataset/VNI_010721_310722.csv")
-print(data.info())
-for i in range(0, len(data['Price'])):
+print(data.head())
+
+for i in range(0, len(data)):
     data['Price'][i]    = float(data['Price'][i].replace(',',''))
     data['Open'][i]     = float(data['Open'][i].replace(',',''))
     data['High'][i]     = float(data['High'][i].replace(',',''))
     data['Low'][i]      = float(data['Low'][i].replace(',',''))
-
+    if(data['Vol.'][i][-1]      == "K"):
+        data['Vol.'][i]      = float(data['Vol.'][i].replace('K','').replace(',',''))*1000
+    elif(data['Vol.'][i][-1]    == "M"):
+        data['Vol.'][i]      = float(data['Vol.'][i].replace('M','').replace(',',''))*1000000
+    else:
+        data['Vol.'][i]      = float(data['Vol.'][i].replace(',',''))
+print(data.head())
 data.plot('Date','Price',color="red")
 plt.show()
-features = ['Open', 'High', 'Low', 'Price']
+features = ['Open', 'High', 'Low', 'Price', 'Vol.']
 plt.subplots(figsize=(20,10))
 for i, col in enumerate(features):
   plt.subplot(2,3,i+1)
