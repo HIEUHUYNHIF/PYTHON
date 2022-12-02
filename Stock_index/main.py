@@ -8,7 +8,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 import seaborn as sb
 
-data=pd.read_csv("./dataset/VNI_010721_310722.csv")
+data = pd.read_csv("./dataset/VNI_010721_310722.csv")
 print(data.head())
 
 for i in range(0, len(data)):
