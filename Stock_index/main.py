@@ -5,12 +5,10 @@ from keras.models import Sequential
 from keras.layers import Dense, LSTM
 import math
 from sklearn.preprocessing import MinMaxScaler
-
 import seaborn as sb
 
-data = pd.read_csv("./dataset/VNI_010721_310722.csv")
-print(data.head())
-
+data = pd.read_csv("./dataset/VNI_010721_311221.csv")
+print(data.info())
 for i in range(0, len(data)):
     data['Price'][i]    = float(data['Price'][i].replace(',',''))
     data['Open'][i]     = float(data['Open'][i].replace(',',''))
@@ -22,7 +20,24 @@ for i in range(0, len(data)):
         data['Vol.'][i]      = float(data['Vol.'][i].replace('M','').replace(',',''))*1000000
     else:
         data['Vol.'][i]      = float(data['Vol.'][i].replace(',',''))
-print(data.head())
+
+def reverse_array(myArray):
+    for i in range(0, int(len(myArray)/2)):
+        temp                            =   myArray[i]         
+        myArray[i]                 =   myArray[len(myArray) - 1 - i]
+        myArray[len(myArray) - 1 - i] =   temp
+    return myArray
+
+data['Date']        =   reverse_array(data['Date'])
+data['High']        =   reverse_array(data['High'])
+data['Low']         =   reverse_array(data['Low'])
+data['Open']        =   reverse_array(data['Open'])
+data['Price']       =   reverse_array(data['Price'])
+data['Vol.']        =   reverse_array(data['Vol.'])
+data['Change %']    =   reverse_array(data['Change %'])
+
+print(data)
+
 data.plot('Date','Price',color="red")
 plt.show()
 features = ['Open', 'High', 'Low', 'Price', 'Vol.']
@@ -48,7 +63,7 @@ scaler = MinMaxScaler(feature_range=(0, 1))
 scaled_data = scaler.fit_transform(dataset)
  
 # 4. Creating training data size : 70% of the data
-training_data_len = math.ceil(len(dataset) *0.8)
+training_data_len = math.ceil(len(dataset) *0.7)
 train_data = scaled_data[0:training_data_len  , : ]
  
 # 5. Separating the data into x and y data
