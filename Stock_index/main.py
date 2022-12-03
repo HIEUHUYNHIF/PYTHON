@@ -7,7 +7,7 @@ import math
 from sklearn.preprocessing import MinMaxScaler
 import seaborn as sb
 
-data = pd.read_csv("./dataset/VNI_010721_311221.csv")
+data = pd.read_csv("./dataset/VNI_010721_310722.csv")
 print(data.info())
 for i in range(0, len(data)):
     data['Price'][i]    = float(data['Price'][i].replace(',',''))
@@ -63,16 +63,16 @@ scaler = MinMaxScaler(feature_range=(0, 1))
 scaled_data = scaler.fit_transform(dataset)
  
 # 4. Creating training data size : 70% of the data
-training_data_len = math.ceil(len(dataset) *0.7)
+training_data_len = math.ceil(len(dataset) *0.8)
 train_data = scaled_data[0:training_data_len  , : ]
  
 # 5. Separating the data into x and y data
 x_train_data=[]
 y_train_data =[]
-for i in range(60,len(train_data)):
+for i in range(3,len(train_data)):
     x_train_data=list(x_train_data)
     y_train_data=list(y_train_data)
-    x_train_data.append(train_data[i-60:i,0])
+    x_train_data.append(train_data[i-3:i,0])
     y_train_data.append(train_data[i,0])
  
     # 6. Converting the training x and y values to numpy arrays
@@ -91,11 +91,11 @@ model.compile(optimizer='adam', loss='mean_squared_error')
 model.fit(x_train_data2, y_train_data1, batch_size=1, epochs=1)
 
 # 1. Creating a dataset for testing
-test_data = scaled_data[training_data_len - 60: , : ]
+test_data = scaled_data[training_data_len - 3: , : ]
 x_test = []
 y_test =  dataset[training_data_len : , : ]
-for i in range(60,len(test_data)):
-    x_test.append(test_data[i-60:i,0])
+for i in range(3,len(test_data)):
+    x_test.append(test_data[i-3:i,0])
  
 # 2.  Convert the values into arrays for easier computation
 x_test = np.array(x_test)
