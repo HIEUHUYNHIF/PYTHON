@@ -24,8 +24,8 @@ for i in range(0, len(data)):
 def reverse_array(myArray):
     for i in range(0, int(len(myArray)/2)):
         temp                            =   myArray[i]         
-        myArray[i]                 =   myArray[len(myArray) - 1 - i]
-        myArray[len(myArray) - 1 - i] =   temp
+        myArray[i]                      =   myArray[len(myArray) - 1 - i]
+        myArray[len(myArray) - 1 - i]   =   temp
     return myArray
 
 data['Date']        =   reverse_array(data['Date'])
