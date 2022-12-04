@@ -7,7 +7,7 @@ import math
 from sklearn.preprocessing import MinMaxScaler
 import seaborn as sb
 
-data = pd.read_csv("./dataset/VNI/VNI_010721_310722.csv")
+data = pd.read_csv("./dataset/growthrate/YEG_010721_310322.csv")
 print(data.info())
 for i in range(0, len(data)):
     data['Price'][i]    = float(data['Price'][i].replace(',',''))
@@ -45,7 +45,8 @@ scaler = MinMaxScaler(feature_range=(0, 1))
 scaled_data = scaler.fit_transform(dataset)
  
 # 4. Creating training data size : 80% of the data
-trainDataLen = math.ceil(len(dataset) *0.5)
+# trainDataLen = math.ceil(len(dataset) *0.8)
+trainDataLen = 130
 trainData = scaled_data[0:trainDataLen  , : ]
  
 # 5. Separating the data into x and y data
