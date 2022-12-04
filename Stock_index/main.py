@@ -21,95 +21,77 @@ for i in range(0, len(data)):
     else:
         data['Vol.'][i]      = float(data['Vol.'][i].replace(',',''))
 
-def reverse_array(myArray):
-    for i in range(0, int(len(myArray)/2)):
-        temp                            =   myArray[i]         
-        myArray[i]                      =   myArray[len(myArray) - 1 - i]
-        myArray[len(myArray) - 1 - i]   =   temp
-    return myArray
-
-data['Date']        =   reverse_array(data['Date'])
-data['High']        =   reverse_array(data['High'])
-data['Low']         =   reverse_array(data['Low'])
-data['Open']        =   reverse_array(data['Open'])
-data['Price']       =   reverse_array(data['Price'])
-data['Vol.']        =   reverse_array(data['Vol.'])
-data['Change %']    =   reverse_array(data['Change %'])
+data = data[::-1].reset_index(drop=True)
 
 print(data)
 
 data.plot('Date','Price',color="red")
 plt.show()
 features = ['Open', 'High', 'Low', 'Price', 'Vol.']
-plt.subplots(figsize=(20,10))
+plt.subplots(figsize=(10,5))
 for i, col in enumerate(features):
   plt.subplot(2,3,i+1)
   sb.distplot(data[col])
 plt.show()
 
-plt.subplots(figsize=(20,10))
-for i, col in enumerate(features):
-    plt.subplot(2,3,i+1)
-    sb.boxplot(data[col])
-plt.show()
 # 1. Filter out the closing market price data
 close_data = data.filter(['Price'])
  
 # 2. Convert the data into array for easy evaluation
 dataset = close_data.values
  
-# 3. Scale/Normalize the data to make all values between 0 and 1
+# 3. Scale/Normalize the data to make all values between 0 and 112
 scaler = MinMaxScaler(feature_range=(0, 1))
 scaled_data = scaler.fit_transform(dataset)
  
-# 4. Creating training data size : 70% of the data
-training_data_len = math.ceil(len(dataset) *0.8)
-train_data = scaled_data[0:training_data_len  , : ]
+# 4. Creating training data size : 80% of the data
+trainDataLen = math.ceil(len(dataset) *0.8)
+trainData = scaled_data[0:trainDataLen  , : ]
  
 # 5. Separating the data into x and y data
-x_train_data=[]
-y_train_data =[]
-for i in range(3,len(train_data)):
-    x_train_data=list(x_train_data)
-    y_train_data=list(y_train_data)
-    x_train_data.append(train_data[i-3:i,0])
-    y_train_data.append(train_data[i,0])
+trainDataX=[]
+trainDataY =[]
+for i in range(3,len(trainData)):
+    trainDataX=list(trainDataX)
+    trainDataY=list(trainDataY)
+    trainDataX.append(trainData[i-3:i,0])
+    trainDataY.append(trainData[i,0])
  
     # 6. Converting the training x and y values to numpy arrays
-    x_train_data1, y_train_data1 = np.array(x_train_data), np.array(y_train_data)
+    trainDataX1, trainDataY1 = np.array(trainDataX), np.array(trainDataY)
  
     # 7. Reshaping training s and y data to make the calculations easier
-    x_train_data2 = np.reshape(x_train_data1, (x_train_data1.shape[0],x_train_data1.shape[1],1))
+    trainDataX2 = np.reshape(trainDataX1, (trainDataX1.shape[0],trainDataX1.shape[1],1))
 
 model = Sequential()
-model.add(LSTM(units=50, return_sequences=True,input_shape=(x_train_data2.shape[1],1)))
+model.add(LSTM(units=50, return_sequences=True,input_shape=(trainDataX2.shape[1],1)))
 model.add(LSTM(units=50, return_sequences=False))
 model.add(Dense(units=25))
 model.add(Dense(units=1))
 
 model.compile(optimizer='adam', loss='mean_squared_error')
-model.fit(x_train_data2, y_train_data1, batch_size=1, epochs=1)
+model.fit(trainDataX2, trainDataY1, batch_size=1, epochs=1)
 
 # 1. Creating a dataset for testing
-test_data = scaled_data[training_data_len - 3: , : ]
-x_test = []
-y_test =  dataset[training_data_len : , : ]
-for i in range(3,len(test_data)):
-    x_test.append(test_data[i-3:i,0])
+testData = scaled_data[trainDataLen - 3: , : ]
+testX = []
+testY =  dataset[trainDataLen : , : ]
+for i in range(3,len(testData)):
+    testX.append(testData[i-3:i,0])
  
 # 2.  Convert the values into arrays for easier computation
-x_test = np.array(x_test)
-x_test = np.reshape(x_test, (x_test.shape[0],x_test.shape[1],1))
+testX = np.array(testX)
+testX = np.reshape(testX, (testX.shape[0],testX.shape[1],1))
  
 # 3. Making predictions on the testing data
-predictions = model.predict(x_test)
+predictions = model.predict(testX)
 predictions = scaler.inverse_transform(predictions)
 
-rmse=np.sqrt(np.mean(((predictions- y_test)**2)))
+rmse=np.sqrt(np.mean(((predictions- testY)**2)))
 print(rmse)
 
-train = data[:training_data_len]
-valid = data[training_data_len:]
+train = data[:trainDataLen]
+valid = data[trainDataLen:]
  
 valid['Predictions'] = predictions
  
