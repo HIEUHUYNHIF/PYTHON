@@ -7,7 +7,7 @@ import math
 from sklearn.preprocessing import MinMaxScaler
 import seaborn as sb
 
-data = pd.read_csv("./dataset/growthrate/YEG_010721_310322.csv")
+data = pd.read_csv("./dataset/droprate/TAC_010721_310322.csv")
 print(data.info())
 for i in range(0, len(data)):
     data['Price'][i]    = float(data['Price'][i].replace(',',''))
